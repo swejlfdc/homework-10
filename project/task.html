@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Sponsor Flip Wall With jQuery &amp; CSS | Tutorialzine demo</title>
+
+<link rel="stylesheet" type="text/css" href="styles.css" />
+<link rel="stylesheet" type="text/css" href="./skins/square/yellow.css" />
+<link rel="stylesheet" type="text/css" href="./css/custom.css" />
+<!--
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+-->
+
+<script type="text/javascript" src="./js/jquery.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js"></script>
+<script type="text/javascript" src="jquery.flip.min.js"></script>
+<script type="text/javascript" src="script.js"></script>
+
+<script type="text/javascript" src="jquery.iCheck.js"></script>
+
+<script type="text/javascript" src="core.js"> </script>
+<script type="text/javascript">
+	var setLoad = false;
+
+	function flipGrid(mat, row_size, col_size) {
+		$(document).ready(function() {
+		for(var i = 0; i < row_size; ++i)
+			for(var j = 0; j < col_size; ++j) {
+				id = "r" + i + "c" + j;
+				obj = document.getElementById(id);
+				var elem = $(obj);
+				if(elem.data('flipped') != mat[i][j]) {
+					elem.trigger("click");
+				}
+			}
+		});
+	}
+	function getMatStr(mat) {
+		var str = "[";
+		for(var i = 0; i < scanRow; ++i) {
+			if(i != 0) str += ",";
+			str += "[";
+			for(var j = 0; j < scanCol; ++j) {
+				if(j != 0) str += ",";
+				str += mat[i][j];
+			}
+			str += "]";
+		}
+		str += "]";
+		return str;
+	}
+
+	function autoplay() {
+		var sec_base = 0; 
+		for(var i = 0; i < Count; ++i) {
+			command = "flipGrid(" + getMatStr(ans[i]) + ", " + scanRow + ", " + scanCol + ") ";
+			setTimeout(command, sec_base * 3500);
+			sec_base ++;
+		}
+	}
+	function test() {
+		//a = document.getElementById("test");
+		//$(a).trigger("click");
+		//if(setLoad) return 0; else setLoad = true;
+		var d1 = document.getElementById("dataArea");
+		var d2 = document.getElementById("selected");
+		calc("dataArea", false, false, true, flipGrid, load);
+		autoplay();
+		$(d1).hide();
+		$(d2).hide();
+	}
+
+	function getGrid(r, c, val) {
+		id = "r" + r + "c" + c;
+		ret = '<div  class="sponsor"  title="Click to flip"><div class="sponsorFlip" id="' + id + '"><div class="sponsorDescription" style="background-color:#FFFF66;height: 64%;">';	
+		ret += val;
+		ret += '</div></div><div class="sponsorData" ><div class="sponsorDescription" >';
+		ret += val;
+		ret += '</div></div></div>';
+		return ret;
+	}
+
+	function load(mat, row_size, col_size) {
+		obj = document.getElementById('main');
+		inner = "";
+		inner = "<table style='width:30px' class='flipTable'>";
+		for(i = 0; i < row_size; ++i) {
+			inner += "<tr>";
+			for(j = 0; j < col_size; ++j) {
+				inner += "<td>";
+				inner += getGrid(i, j, mat[i][j]);
+				inner += "</td>"
+			}
+			inner += "</tr>";
+		}
+		inner += "</table>"
+		inner += "<div class='clear'></div>";
+		obj.innerHTML += inner;
+		$(document).ready(function(){
+	/* The following code is executed once the DOM is loaded */
+
+	
+	$('.sponsorFlip').bind("click",function(){
+		
+		// $(this) point to the clicked .sponsorFlip element (caching it in elem for speed):
+		
+		var elem = $(this);
+		
+		// data('flipped') is a flag we set when we flip the element:
+		
+		if(elem.data('flipped'))
+		{
+			// If the element has already been flipped, use the revertFlip method
+			// defined by the plug-in to revert to the default state automatically:
+			
+			elem.revertFlip();
+			
+			// Unsetting the flag:
+			elem.data('flipped',false)
+		}
+		else
+		{
+			// Using the flip method defined by the plugin:
+			
+			elem.flip({
+				direction:'lr',
+				speed: 350,
+				onBefore: function(){
+					// Insert the contents of the .sponsorData div (hidden from view with display:none)
+					// into the clicked .sponsorFlip div before the flipping animation starts:
+					
+					elem.html(elem.siblings('.sponsorData').html());
+				}
+			});
+			
+			// Setting the flag:
+			elem.data('flipped',true);
+		}
+	});
+	
+});
+	}
+</script>
+
+</head>	
+
+<body>
+<div>
+	<h1>Calculate the maxsum of a matrix &amp; CSS</h1>
+</div>
+<div>
+	<div style="height:100px;width:60%;float:left" id="dataArea">
+		<textarea id="data" rows="3" cols="20" style="width:700px;height:200px;margin:30px 30px 30px 30px;"></textarea>
+	</div > 
+	<div style="width:500px;float:left" id="selected">
+			 <div class="skin-section">
+              <h4>Live</h4>
+              <ul class="list">
+                <li>
+                  <input tabindex="9" type="checkbox" id="square-checkbox-1">
+                  <label for="square-checkbox-1" style="padding:0px 0px 0px 40px">Checkbox 1</label>
+                </li>
+                <li>
+                  <input tabindex="10" type="checkbox" id="square-checkbox-2" checked>
+                  <label for="square-checkbox-2" style="padding:0px 0px 0px 40px">Checkbox 2</label>
+                </li>
+                <li>
+                  <input type="checkbox" id="square-checkbox-disabled" disabled>
+                  <label for="square-checkbox-disabled" style="padding:0px 0px 0px 40px">Disabled</label>
+                </li>
+                <li>
+                  <input type="checkbox" id="square-checkbox-disabled-checked" checked disabled>
+                  <label for="square-checkbox-disabled-checked" style="padding:0px 0px 0px 40px">Disabled &amp; checked</label>
+                </li>
+              </ul>
+      		<div>
+				<button onclick="test()" id="testBtn" > test</button>
+			</div>
+            </div> 
+            <script>
+            $(document).ready(function(){
+              $('.skin-section input').iCheck({
+                checkboxClass: 'icheckbox_square-yellow',
+                radioClass: 'iradio_square-yellow',
+                increaseArea: '20%'
+              });
+            });
+            </script>			
+	</div>
+</div>
+<div>
+	<div class="sponsorListHolder" id="main" style="width:1366px">
+
+		<!--<script type="text/javascript">load();</script>
+		
+		-->
+    </div>
+</div>        
+
+<p class="note">None of these companies are actually sponsors of Tutorialzine.</p>
+
+</body>
+</html>

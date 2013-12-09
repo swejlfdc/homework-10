@@ -1,0 +1,42 @@
+<html>
+<head>
+<script type="text/javascript">
+function check()
+{
+document.getElementById("myCheck").checked=true
+}
+
+function uncheck()
+{
+document.getElementById("myCheck").checked=false
+}
+</script>
+</head>
+
+<body>
+<form>
+<input type="checkbox" id="myCheck" />
+<input type="button" onclick="check()" value="选定复选框" />
+<input type="button" onclick="uncheck()" value="取消选定复选框" />
+<ul>
+                <li>
+                  <input type="checkbox" value="checkbox">
+                  <label >Checkbox 1</label>
+                </li>
+                <li>
+                  <input type="checkbox">
+                  <label for="square-checkbox-2">Checkbox 2</label>
+                </li>
+                <li>
+                  <input type="checkbox">
+                  <label for="square-checkbox-disabled">Disabled</label>
+                </li>
+                <li>
+                  <input type="checkbox">
+                  <label for="square-checkbox-disabled-checked">Disabled &amp; checked</label>
+                </li>
+              </ul>        
+</form>
+</body>
+
+</html>
