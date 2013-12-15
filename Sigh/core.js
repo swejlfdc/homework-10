@@ -1,16 +1,17 @@
 var  inf = 0x7fffffff;
 
 var c= Array();
-var selected = new Array();
 var N, M;
 var HEXT=false, VEXT=false, FINDRECT=false;
 var ans= Array(), Count = 0; 
+var selected = Array();
+var CurAns = Array();
 var scanRow, scanCol;
 
 function inputFromFile(dataSoure) {
 	var dataArea =  document.getElementById(dataSoure);
-	var text = dataArea.innerText;
-	text = "4,4\n1,2,3,4\n12,-1,-1,5\n11,-1,-1,6\n10,9,8,7";
+	var text = dataArea.value;
+	//text = "4,4\n1,2,3,4\n12,-1,-1,5\n11,-1,-1,6\n10,9,8,7";
 
 	var lines = text.split('\n');
 	var head = lines[0].split(',');
@@ -45,7 +46,7 @@ function apply2DIntArr(row,  col) {
 }
 
 function GetSel(row_size, col_size, si, sj, ei, ej) {
-	ret = apply2DIntArr(row_size, col_size);
+	var ret = apply2DIntArr(row_size, col_size);
 	for(var i = 0; i < row_size; ++i)
 		for(var j = 0; j < col_size; ++j) ret[i][j] = false;
 	for(var i = si; i <= ei; ++i) 
@@ -55,19 +56,21 @@ function GetSel(row_size, col_size, si, sj, ei, ej) {
 	return ret;
 }
 
-function _maxsum(c, size, r1, r2) {
-	var ret = -inf, minpre = 0, prefix = 0;
+function _maxsum(c, size, r1, r2, sc, preans) {
+	var ret = preans, minpre = 0, prefix = 0;
 	var l, ll, rr;
-	ll = 0; l = 0; rr = 0;
+	ll = 0; l = -1; rr = 0;
 	for(var i = 0; i < size; i++) {
 		prefix += c[i];
 		if(prefix - minpre > ret) {
 			ret = prefix - minpre;
 			ll = l + 1;
 			rr = i;
-			selected = GetSel(scanRow, scanCol, r1, ll, r2, rr);
-			ans[Count++] = selected;
-		}
+			CurAns = GetSel(scanRow, scanCol, r1, sc + ll, r2, sc + rr);
+		} 
+		selected[Count]= GetSel(scanRow, scanCol, r1, sc + 0, r2, sc + i);
+		ans[Count] = CurAns;
+		Count++;
 		if(prefix < minpre) {
 			minpre = prefix;
 			l = i;
@@ -76,18 +79,18 @@ function _maxsum(c, size, r1, r2) {
 	return [ret, ll, rr];
 }
 
-function maxsum(mat, row_size, col_size, rRow, rCol, drawFlip) {
+function maxsum(mat, row_size, col_size, rRow, rCol) {
 	var arr;
 	var ret = -inf;
 	var sec = 1;
-	for(var ni = 0; ni < row_size - rRow + 1; ++ni)
+	for(var ni = 0; ni < row_size; ++ni)
 		for(var nj = 0; nj < col_size - rCol + 1; ++nj) {			
 			arr= Array(col_size);
 			for(var i = 0; i < col_size; ++i) arr[i] = 0;
 			for(var i = ni; i < ni + rRow && i < row_size; ++i) {
 				for(var j = nj; j < nj + rCol && j < col_size; ++j)
 					arr[j - nj] += mat[i][j];
-				tmp = _maxsum(arr, rCol, ni, i);
+				tmp = _maxsum(arr, rCol, ni, i, nj, ret);
 				if(tmp[0] > ret) {
 					ret = tmp[0];
 					//selected = GetSel(rRow, rCol, ni, tmp[1], i, tmp[2])
@@ -179,37 +182,39 @@ int maxUnicomBlock(int mat[][MAXCOL], int row_size, int col_size, int rRow, int 
 }
 */
 function VDoubleExtend(mat, row_size, col_size) {
-	for(var i = 0; i < row_size; ++i)
-		for(var j = 0; j < col_size; ++j) 
-			mat[i][j + col_size] = mat[i][j];
-}
-
-function HDoubleExtend(mat, row_size, col_size) {
+	for(var i = 0; i < row_size; ++i) {
+		mat[i + row_size] = Array();
+	}
 	for(var i = 0; i < row_size; ++i)
 		for(var j = 0; j < col_size; ++j) 
 			mat[i + row_size][j] = mat[i][j];
 }
 
-function calc(dataSoure, vext, hext, frect, drawFlip, load) {
+function HDoubleExtend(mat, row_size, col_size) {
+	for(var i = 0; i < row_size; ++i)
+		for(var j = 0; j < col_size; ++j) 			
+			mat[i][j + col_size] = mat[i][j];
+}
+
+function calc(dataSoure, vext, hext, frect, load) {
 	HEXT = hext;
 	VEXT = vext;
 	FINDRECT = true;
+	Count = 0;
 	inputFromFile(dataSoure);
-	load(c, N, M);
-	drawFlip(selected, N, M);
+	load(c, N, M);	
 	scanRow = N, scanCol = M;
-	setTimeout("",1000);
 	if(VEXT) {
-		VDoubleExtend(c, N, M); M *= 2;
+		VDoubleExtend(c, N, M); N *= 2;
 	}
 	if(HEXT) {
-		HDoubleExtend(c, N, M); N *= 2;
+		HDoubleExtend(c, N, M); M *= 2;
 	}
-	var ans;
-	
+	CurAns = GetSel(scanRow, scanCol, 0, 0, scanRow, scanCol);
 	if(FINDRECT) 
-		ans = maxsum(c, N, M, scanRow, scanCol, drawFlip);
+		maxsum(c, N, M, scanRow, scanCol);
 	else  
-		ans = maxUnicomBlock(c, N, M, scanRow, scanCol);
-	
+		maxUnicomBlock(c, N, M, scanRow, scanCol);
+	console.log(ans);
+	console.log(selected);	
 }

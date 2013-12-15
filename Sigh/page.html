@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  	<head>
+	    <!-- Meta, title, CSS, favicons, etc. -->
+	    <meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+  		<meta content="width=device-width" name="viewport">
+
+		<title>
+		  
+		    起步 &middot; Bootstrap
+		  
+		</title>
+		<link rel="stylesheet" type="text/css" href="./css/mycss.css" />
+<!-- boostrap files -->
+		<link rel="stylesheet" type="text/css" href="./dist/css/bootstrap.min.css" />
+
+		<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+		<script type="text/javascript" src="dist/js/bootstrap.min.js"></script>
+
+<!-- icheck files -->
+		<link rel="stylesheet" type="text/css" href="./iCheck-master/skins/square/yellow.css" />
+
+		<script type="text/javascript" src="./iCheck-master/jquery.iCheck.js"></script>
+		<script type="text/javascript" src="./core.js"></script>
+		<script type="text/javascript">
+			var showed = false, played = true;
+			var CurStep = 0;
+			var setDisplay = false;
+			function _display() {
+				for(var i = 0; i < scanRow; ++i) 
+					for(var j = 0; j < scanCol; ++j) {
+						id = "r" + i + "c" + j;
+						obj = document.getElementById(id);
+						obj.setAttribute('class', selected[CurStep][i][j] ? 'active' : 'defalut');
+					}
+				if(showed) {
+					for(var i = 0; i < scanRow; ++i) 
+						for(var j = 0; j < scanCol; ++j) {
+							id = "r" + i + "c" + j;
+							obj = document.getElementById(id);
+							if(ans[CurStep][i][j])
+							obj.setAttribute('class', 'success');
+						}
+				}
+			}
+			function display() {
+				if(CurStep >= Count) {
+					played = false; 
+					CurStep--;
+				}
+				if(!played) return;
+				_display();
+				CurStep++;
+			}
+			function play() {
+				played = true;
+			}
+			function pause() {
+				played = false;
+			}
+			function reset() {
+				played = false;
+				CurStep = 0;
+				_display();
+			}
+			function prev() {
+				if(CurStep < 2) return;
+				if(played) {
+					played = false;
+					CurStep -= 2;
+					_display();
+					played = true;
+				} else {
+					CurStep -=2;
+					if(CurStep < 0) CurStep = 0;
+					_display();
+				}
+			}
+			function next() {
+				if(CurStep >= Count) return;
+				if(played) {
+					played = false;
+					CurStep += 1;
+					_display();
+					played = true;
+				} else {
+					CurStep +=1;
+					if(CurStep < 0) CurStep = 0;
+					_display();
+				}
+			}
+			function show() {
+				showed = true;
+				_display();
+			}
+			function dishow() {
+				showed = false;
+				_display();
+			}
+			function getGrid(r, c, val) {
+				id = "r" + r + "c" + c;
+				ret = '<td id="' + id + '" class="active" >';	
+				ret += val;
+				ret += '</td>';
+				return ret;
+			}
+			function dataRand() {
+				str="6,6\n";
+				for(var i = 0; i < 6; ++i) {
+					for(var j = 0; j < 6; ++j) {
+						if(j != 0) str += ",";
+						str += parseInt(Math.random()*200 -100);
+					}
+					str+="\n";
+				}
+				$("#dataArea").val(str);
+			}
+			function _load(mat, row_size, col_size) {
+				obj = document.getElementById('tb_div');
+				inner = "<table class='table' style='width:1065px;table-layout:fixed;' >";
+				for(i = 0; i < row_size; ++i) {
+					inner += "<tr>";
+					for(j = 0; j < col_size; ++j) {
+						inner += getGrid(i, j, mat[i][j]);
+					}
+					inner += "</tr>";
+				}
+				inner += "</table>";
+				obj.innerHTML = inner;
+			}
+
+			function load() {
+				CurStep = 0;
+				v = $("#check1")[0].checked;
+				h = $("#check2")[0].checked;
+				r = $("#check3")[0].checked;
+				r = !r;
+				calc("dataArea", v, h, r, _load);
+				if(!setDisplay) {
+					setDisplay = true;
+					setInterval(display, 1000);
+				}
+				reset();
+				panel = document.getElementById("collapseTwo");
+				$(panel).collapse('show');
+			}
+		</script>
+
+	</head>
+
+	<body>
+		<div class="panel-group" id="accordion">
+		  <div class="panel panel-default">
+		    <div class="panel-heading">
+		      <h4 class="panel-title">
+		        <a id="load_panel" data-toggle="collapse" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+		          DATA LOAD PANEL
+		        </a>
+		      </h4>
+		    </div>
+		    <div id="collapseOne" class="panel-collapse collapse in">
+		      <div class="panel-body">
+		      	<div class="container-fluid ">
+		      		<div class="row-fluid">
+				      	<div class="col-lg-8">
+				      		<div width="100%">
+				        		<textarea id="dataArea" style="width:100%;height:132px;"></textarea>
+				        	</div>
+				        </div>
+				        <div class="col-lg-4">
+				        	<ul style="padding-right:60px; margin:0; padding:0; list-style: none; line-height:18px;width:100%;">
+					        	<li style=" position:relative; padding-bottom: 15px; padding-left:42px; list-style: none; line-height:18px;">
+						        	<input id="check1" type="checkbox">
+						        	<lable for="check1" style="cursor: pointer;"> vertical extended </lable>
+						        </li>
+						        <li style="position:relative; padding-bottom: 15px; padding-left:42px; list-style: none; line-height:18px;">
+						        	<input id="check2" type="checkbox" style="">
+						        	<lable for="check2" style="cursor: pointer;"> horizontal extended </lable>
+						        </li>
+						        <li style="position:relative; padding-bottom: 15px; padding-left:42px; list-style: none; line-height:18px;">
+						        	<input id="check3" type="checkbox" style="">
+						        	<lable for="check3" style="cursor: pointer;"> unicom block extended </lable>
+						        </li>
+					        <ul>
+							<script>
+							$(document).ready(function(){
+							  $('input').iCheck({
+							    checkboxClass: 'icheckbox_square-yellow',
+							    radioClass: 'iradio_square-yellow',
+							    //increaseArea: '20%' // optional
+							  });
+							 });
+							</script>
+							</div>
+							<div>
+								<div class="btn-group" style="padding-left:14px;">
+									<button type="button" onclick="load()" class="btn btn-default"> LOAD</button>
+									<button type="button" onclick="dataRand()" class="btn btn-default"> RANDOM</button>	
+								</div>
+							<div>
+				        </div>
+				    </div>
+			    </div>
+		      </div>
+		    </div>
+		  </div>
+		  <div class="panel panel-default">
+		    <div class="panel-heading">
+		      <h4 class="panel-title">
+		        <a id="display_panel" data-toggle="collapse" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+		          DISPLAY PANEL
+		        </a>
+		      </h4>
+		    </div>
+		    <div id="collapseTwo" class="panel-collapse collapse">
+		      <div class="panel-body">
+		        <div class="container-fluid ">
+		      		<div class="row-fluid">
+				      	<div class="col-lg-10">
+				      		<div id="tb_div" style="width:100%;	">
+				        		<table border="1px" style="width:100%;height:500px;"> 
+				        			<tbody> <tr> <td></td><td></td></tr></tbody>
+				        		</table>
+				        	</div>
+				        </div>
+				        <div class="col-lg-2">
+				        	<div>
+								<div class="btn-group-vertical">
+									<button type="button" class="btn btn-default" onclick="play()"> PLAY</button>
+									<button type="button" class="btn btn-default" onclick="next()"> NEXT</button>	
+									<button type="button" class="btn btn-default" onclick="prev()"> PREV</button>
+									<button type="button" class="btn btn-default" onclick="pause()"> PAUSE</button>
+									<button type="button" class="btn btn-default" onclick="reset()"> RESET</button>	
+								</div>
+								<div style="padding-top:5px;">
+									<button type="button" class="btn btn-default" onmouseover="show()" onmouseout="dishow()"> SHOW</button>
+								</div>
+							<div>
+				        </div>
+				    </div>
+			    </div>
+		      </div>
+		    </div>
+		  </div>
+	</body>
+</html>
+
